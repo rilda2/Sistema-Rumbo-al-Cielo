@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #faf5f0;
+  color: #1e293b;
+}
+
+/* Custom scrollbar for modern feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =========================================
+   Estilos de Impresión / Generación de PDF
+   ========================================= */
+@media print {
+  /* Ocultar elementos de navegación, pie de página, botones y controles de pantalla */
+  nav,
+  footer,
+  header,
+  button,
+  .no-print {
+    display: none !important;
+  }
+
+  /* Resetear página y márgenes */
+  @page {
+    size: auto;
+    margin: 10mm 12mm 10mm 12mm;
+  }
+
+  body {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Contenedores y espaciados compactos */
+  .max-w-7xl,
+  .max-w-6xl,
+  .max-w-5xl,
+  .max-w-4xl {
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin: 0 !important;
+  }
+
+  .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.75rem !important;
+  }
+
+  .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.5rem !important;
+  }
+
+  .p-6 {
+    padding: 0.75rem !important;
+  }
+
+  .p-5, .p-4 {
+    padding: 0.5rem !important;
+  }
+
+  /* Tarjetas y bordes limpios sin sombras */
+  .shadow-sm,
+  .shadow-md,
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-xs {
+    box-shadow: none !important;
+  }
+
+  .border {
+    border-color: #cbd5e1 !important;
+  }
+
+  .rounded-2xl {
+    border-radius: 8px !important;
+  }
+
+  /* Tablas compactas para impresión */
+  table {
+    width: 100% !important;
+    font-size: 10px !important;
+    border-collapse: collapse !important;
+  }
+
+  th {
+    padding: 4px 6px !important;
+    font-size: 9px !important;
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+    border-bottom: 1.5px solid #94a3b8 !important;
+  }
+
+  td {
+    padding: 4px 6px !important;
+    font-size: 9.5px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Tipografías y titulares reducidos para impresión */
+  h1 {
+    font-size: 16px !important;
+  }
+
+  h2 {
+    font-size: 14px !important;
+  }
+
+  h3 {
+    font-size: 12px !important;
+  }
+
+  /* Reducción de insignias y badges */
+  span.inline-flex,
+  span.rounded-md,
+  span.rounded-full {
+    font-size: 9px !important;
+    padding: 1px 4px !important;
+  }
+}
