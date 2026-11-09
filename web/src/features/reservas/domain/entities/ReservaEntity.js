@@ -19,6 +19,7 @@ export class ReservaEntity {
         estado = 'confirmada',
         tipo = 'diaria',
         esPension = false,
+        esObligatoria = false,
         costoAplicado = 0,
         recogido = false,
         notas = null,
@@ -40,6 +41,7 @@ export class ReservaEntity {
         this.estado = estado;
         this.tipo = tipo;
         this.esPension = esPension;
+        this.esObligatoria = esObligatoria;
         this.costoAplicado = costoAplicado;
         this.recogido = recogido;
         this.notas = notas;

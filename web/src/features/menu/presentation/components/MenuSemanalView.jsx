@@ -52,9 +52,8 @@ export default function MenuSemanalView({
   };
 
   // Generación de los 5 días hábiles (Lunes a Viernes) para la semana seleccionada
-  const weekDays = useMemo(() => {
-    return generateWeekDays(selectedMonday);
-  }, [selectedMonday]);
+  // const weekDays = useMemo(() => {eturn generateWeekDays(selectedMonday);}, [selectedMonday]);
+  const weekDays = useMemo(() => generateWeekDays(selectedMonday).slice(0, 4), [selectedMonday]);
 
   // Diccionario rápido de menús por fecha string 'YYYY-MM-DD'
   const menusMap = useMemo(() => {
@@ -93,7 +92,7 @@ export default function MenuSemanalView({
               Semana del {weekRangeLabel}
             </h2>
             <p className="text-xs text-slate-500">
-              Programación de almuerzos de lunes a viernes
+              Programación de almuerzos de lunes a jueves
             </p>
           </div>
         </div>
@@ -141,7 +140,7 @@ export default function MenuSemanalView({
       </div>
 
       {/* Grid de los 5 días de la semana */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {weekDays.map((day) => {
           const menuDia = menusMap.get(day.dateStr);
           const isToday = day.dateStr === todayStr;
@@ -152,15 +151,15 @@ export default function MenuSemanalView({
             <div
               key={day.dateStr}
               className={`bg-white rounded-2xl shadow-sm border flex flex-col transition-all duration-200 overflow-hidden ${isToday
-                  ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md'
-                  : 'border-slate-200/80 hover:border-slate-300'
+                ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-md'
+                : 'border-slate-200/80 hover:border-slate-300'
                 }`}
             >
               {/* Encabezado de la Tarjeta del Día */}
               <div
                 className={`p-3.5 border-b text-center relative ${isToday
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
-                    : 'bg-slate-50 text-slate-800 border-slate-100'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
+                  : 'bg-slate-50 text-slate-800 border-slate-100'
                   }`}
               >
                 {isToday && (
@@ -184,8 +183,8 @@ export default function MenuSemanalView({
                   {isPublished ? (
                     <span
                       className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full ${isToday
-                          ? 'bg-white/20 text-white'
-                          : 'bg-emerald-100 text-emerald-800'
+                        ? 'bg-white/20 text-white'
+                        : 'bg-emerald-100 text-emerald-800'
                         }`}
                     >
                       <CheckCircle2 className="w-3 h-3 mr-1" /> Publicado
@@ -193,8 +192,8 @@ export default function MenuSemanalView({
                   ) : (
                     <span
                       className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full ${isToday
-                          ? 'bg-black/20 text-blue-100'
-                          : 'bg-amber-100 text-amber-800'
+                        ? 'bg-black/20 text-blue-100'
+                        : 'bg-amber-100 text-amber-800'
                         }`}
                     >
                       <Clock className="w-3 h-3 mr-1" /> Borrador / Pendiente

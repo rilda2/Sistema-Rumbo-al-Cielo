@@ -2,7 +2,7 @@
  * Política de Reservas
  *
  * Reglas de negocio (tomadas de reservation_policy.dart de la APK):
- *  - No se reserva en fechas pasadas, sábados, domingos ni feriados.
+ *  - No se reserva en fechas pasadas, en días sin servicio (solo se atiende de lunes a jueves) ni feriados.
  *  - Reservar para HOY: hasta las 09:00 inclusive (09:01 ya no).
  *  - Cancelar para HOY: solo antes de las 09:00 (desde las 09:00 ya no).
  *  - La entrega solo se marca el día del almuerzo, de 12:00 a 14:00.
@@ -10,6 +10,9 @@
  * Los horarios son parámetros: más adelante pueden venir de la tabla 'configuracion'.
  * Todas las fechas son texto 'YYYY-MM-DD' para evitar problemas de zona horaria.
  */
+
+// Días de atención del restaurante (0 = domingo ... 6 = sábado): lunes a jueves
+export const DIAS_ATENCION_DEFAULT = [1, 2, 3, 4];
 
 const aMinutos = (hhmm) => {
     const [h, m] = String(hhmm).split(':').map(Number);
@@ -31,10 +34,9 @@ const fechaLocalDe = (date) => {
     return `${y}-${m}-${d}`;
 };
 
-const esFinDeSemana = (fecha) => {
+const esDiaSinServicio = (fecha, diasAtencion) => {
     const [y, m, d] = fecha.split('-').map(Number);
-    const dia = new Date(y, m - 1, d).getDay();
-    return dia === 0 || dia === 6;
+    return !diasAtencion.includes(new Date(y, m - 1, d).getDay());
 };
 
 const permitido = () => ({ permitido: true, mensaje: 'Operación permitida.' });
@@ -46,11 +48,13 @@ export class ReservaPolicy {
         limiteCancelacion = '09:00',
         inicioEntrega = '12:00',
         finEntrega = '14:00',
+        diasAtencion = DIAS_ATENCION_DEFAULT,
     } = {}) {
         this.limiteReserva = aMinutos(limiteReserva);
         this.limiteCancelacion = aMinutos(limiteCancelacion);
         this.inicioEntrega = aMinutos(inicioEntrega);
         this.finEntrega = aMinutos(finEntrega);
+        this.diasAtencion = diasAtencion;
     }
 
     /**
@@ -68,8 +72,8 @@ export class ReservaPolicy {
             return denegado('No es posible reservar para fechas pasadas.');
         }
 
-        if (esFinDeSemana(objetivo)) {
-            return denegado('El restaurante no brinda servicio los fines de semana.');
+        if (esDiaSinServicio(objetivo, this.diasAtencion)) {
+            return denegado('El restaurante atiende de lunes a jueves.');
         }
 
         const feriado = feriados.find((f) => {

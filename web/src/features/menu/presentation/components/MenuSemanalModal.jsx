@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Modal from '../../../../components/Modal';
 import { saveMenuSemanalUseCase } from '../../di';
-import { 
-  CalendarDays, 
-  Calendar, 
-  Check, 
-  AlertCircle, 
-  Search, 
-  Trash2, 
-  RotateCcw, 
-  Save, 
-  Clock, 
+import {
+  CalendarDays,
+  Calendar,
+  Check,
+  AlertCircle,
+  Search,
+  Trash2,
+  RotateCcw,
+  Save,
+  Clock,
   ChefHat,
   Sparkles
 } from 'lucide-react';
 
-import { 
-  getMondayOfWeek, 
-  generateWeekDays, 
-  formatLocalDate, 
-  parseLocalDate 
+import {
+  getMondayOfWeek,
+  generateWeekDays,
+  formatLocalDate,
+  parseLocalDate
 } from '../../../../lib/dateUtils';
 
 const DRAFT_STORAGE_KEY = 'restaurante_menu_semanal_draft';
@@ -43,7 +43,8 @@ export default function MenuSemanalModal({
   showToast,
 }) {
   const [startMonday, setStartMonday] = useState(() => initialMonday || getMondayOfWeek());
-  const weekDays = useMemo(() => generateWeekDays(startMonday), [startMonday]);
+  //const weekDays = useMemo(() => generateWeekDays(startMonday), [startMonday]);
+  const weekDays = useMemo(() => generateWeekDays(startMonday).slice(0, 4), [startMonday]);
   const [activeDayIndex, setActiveDayIndex] = useState(initialDayIndex || 0);
   const [selectedPlatosByDate, setSelectedPlatosByDate] = useState({});
   const [publicarSemana, setPublicarSemana] = useState(true);
@@ -57,7 +58,8 @@ export default function MenuSemanalModal({
   const [originalWeekData, setOriginalWeekData] = useState({ platosByDate: {}, isPublished: true });
 
   const getExistingWeekData = useCallback((mondayStr) => {
-    const days = generateWeekDays(mondayStr);
+    //const days = generateWeekDays(mondayStr);
+    const days = generateWeekDays(mondayStr).slice(0, 4);
     const data = {};
     let anyPublished = false;
     let hasAnyMenu = false;
@@ -151,7 +153,7 @@ export default function MenuSemanalModal({
       try {
         localStorage.removeItem(`${DRAFT_STORAGE_KEY}_${startMonday}`);
         localStorage.removeItem(DRAFT_STORAGE_KEY);
-      } catch (err) {}
+      } catch (err) { }
       setDraftSavedAt(null);
       const existing = getExistingWeekData(startMonday);
       setOriginalWeekData(existing);
@@ -256,7 +258,7 @@ export default function MenuSemanalModal({
       try {
         localStorage.removeItem(`${DRAFT_STORAGE_KEY}_${startMonday}`);
         localStorage.removeItem(DRAFT_STORAGE_KEY);
-      } catch (err) {}
+      } catch (err) { }
       setDraftSavedAt(null);
 
       const nombresDias = diasModificados.map((d) => d.dayName).join(', ');
@@ -333,7 +335,7 @@ export default function MenuSemanalModal({
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
             Selecciona el día para ver y asignar sus platos:
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {weekDays.map((d, idx) => {
               const count = (selectedPlatosByDate[d.dateStr] || []).length;
               const isActive = activeDayIndex === idx;
@@ -343,11 +345,10 @@ export default function MenuSemanalModal({
                   key={d.dateStr}
                   type="button"
                   onClick={() => setActiveDayIndex(idx)}
-                  className={`p-3 rounded-xl border text-left transition relative flex flex-col justify-between cursor-pointer ${
-                    isActive
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-300'
-                      : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
-                  }`}
+                  className={`p-3 rounded-xl border text-left transition relative flex flex-col justify-between cursor-pointer ${isActive
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-300'
+                    : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
                 >
                   <div>
                     <span className={`text-[10px] uppercase font-bold block ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
@@ -357,15 +358,14 @@ export default function MenuSemanalModal({
                   </div>
                   <div className="mt-2 flex items-center justify-between">
                     <span
-                      className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${
-                        count > 0
-                          ? isActive
-                            ? 'bg-white/20 text-white'
-                            : 'bg-emerald-100 text-emerald-800'
-                          : isActive
+                      className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${count > 0
+                        ? isActive
+                          ? 'bg-white/20 text-white'
+                          : 'bg-emerald-100 text-emerald-800'
+                        : isActive
                           ? 'bg-white/10 text-blue-200'
                           : 'bg-slate-100 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {count > 0 ? '1 plato' : 'Sin plato'}
                     </span>
@@ -389,11 +389,10 @@ export default function MenuSemanalModal({
                   Selecciona el plato único de almuerzo (el menú es informativo para los comensales).
                 </p>
               </div>
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                activeDayPlatos.length > 0
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-slate-200 text-slate-600'
-              }`}>
+              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${activeDayPlatos.length > 0
+                ? 'bg-emerald-100 text-emerald-800'
+                : 'bg-slate-200 text-slate-600'
+                }`}>
                 {activeDayPlatos.length > 0 ? '1 seleccionado' : 'Sin asignar'}
               </span>
             </div>
@@ -436,16 +435,14 @@ export default function MenuSemanalModal({
                   <div
                     key={plato.id_plato || plato.id}
                     onClick={() => togglePlatoForActiveDay(plato.id_plato || plato.id)}
-                    className={`p-3 rounded-xl border cursor-pointer transition select-none flex items-start space-x-2.5 ${
-                      isSelected
-                        ? 'bg-blue-50/90 border-blue-500 text-blue-950 shadow-xs ring-2 ring-blue-300'
-                        : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
-                    }`}
+                    className={`p-3 rounded-xl border cursor-pointer transition select-none flex items-start space-x-2.5 ${isSelected
+                      ? 'bg-blue-50/90 border-blue-500 text-blue-950 shadow-xs ring-2 ring-blue-300'
+                      : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
+                      }`}
                   >
                     <div className="mt-0.5">
-                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition ${
-                        isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-white'
-                      }`}>
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition ${isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300 bg-white'
+                        }`}>
                         {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                       </div>
                     </div>

@@ -17,6 +17,27 @@ export class SupabaseReservaRepository extends IReservaRepository {
         this.client = client;
     }
 
+    async asignarComboAReservasPension(fecha, combo) {
+        const { data, error } = await this.client
+            .from('reserva')
+            .update({
+                dish_name: combo.dishName,
+                plato_principal: combo.platoPrincipal,
+                sopa_nombre: combo.sopaNombre,
+                entrada_nombre: combo.entradaNombre,
+                es_almuerzo_completo: combo.esAlmuerzoCompleto,
+                categoria_menu: combo.categoriaMenu,
+            })
+            .eq('fecha', fecha)
+            .eq('es_pension', true)
+            .eq('estado', 'confirmada')
+            .is('dish_name', null)
+            .select('id_reserva');
+
+        if (error) throw new AppError(error.message, 'ASSIGN_PLATOS_PENSION_ERROR', error);
+        return (data || []).length;
+    }
+
     async getReservasDeUsuario(idUsuario) {
         const { data, error } = await this.client
             .from(VISTA)
@@ -87,18 +108,21 @@ export class SupabaseReservaRepository extends IReservaRepository {
         };
     }
 
-    async tienePensionActiva(idUsuario, fecha) {
+    async tienePensionActiva(idUsuario, fecha, idFamiliar = null) {
         const [anio, mes] = String(fecha).split('-').map(Number);
 
-        const { data, error } = await this.client
+        let query = this.client
             .from('pension')
             .select('id_pension')
             .eq('id_usuario', idUsuario)
             .eq('year', anio)
             .eq('mes', mes)
-            .eq('activo', true)
-            .limit(1);
+            .eq('estado', 'Confirmada')
+            .eq('activo', true);
 
+        query = idFamiliar ? query.eq('id_familiar', idFamiliar) : query.is('id_familiar', null);
+
+        const { data, error } = await query.limit(1);
         if (error) throw new AppError(error.message, 'CHECK_PENSION_ERROR', error);
         return (data || []).length > 0;
     }

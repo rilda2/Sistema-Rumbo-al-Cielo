@@ -8,6 +8,7 @@ import NonAdminPortal from './components/NonAdminPortal';
 import { MiCuentaPage } from './features/cuenta';
 import { ReportesPage } from './features/reportes';
 import { MisReservasPage, ReservasDelDiaPage } from './features/reservas';
+import { MiPensionPage, PensionesAdminPage } from './features/pension';
 import { UtensilsCrossed } from 'lucide-react';
 
 function AppContent() {
@@ -29,7 +30,7 @@ function AppContent() {
       const savedTab = localStorage.getItem('restaurante_active_tab');
       if (!isAdmin) {
         // Para roles no administradores, proteger pestañas administrativas
-        const adminTabs = ['usuarios', 'reportes', 'reservas-dia'];
+        const adminTabs = ['usuarios', 'reportes', 'reservas-dia', 'pensiones'];
         if (!savedTab || adminTabs.includes(savedTab)) {
           setActiveTab('portal');
         } else {
@@ -37,7 +38,7 @@ function AppContent() {
         }
       } else {
         // Para administradores, si estaba en portal de empleado, ir a usuarios
-        if (savedTab === 'portal' || savedTab === 'mis-reservas') {
+        if (savedTab === 'portal' || savedTab === 'mis-reservas' || savedTab === 'pension') {
           setActiveTab('usuarios');
         } else if (savedTab) {
           setActiveTabState(savedTab);
@@ -81,8 +82,10 @@ function AppContent() {
         {activeTab === 'calendario' && <CalendarioPage />}
         {activeTab === 'cuenta' && <MiCuentaPage />}
         {activeTab === 'menu' && <MenuPage />}
-        {activeTab === 'mis-reservas' && !isAdmin && <MisReservasPage />},
+        {activeTab === 'mis-reservas' && !isAdmin && <MisReservasPage />}
         {activeTab === 'reservas-dia' && isAdmin && <ReservasDelDiaPage />}
+        {activeTab === 'pension' && !isAdmin && <MiPensionPage />}
+        {activeTab === 'pensiones' && isAdmin && <PensionesAdminPage />}
         {activeTab === 'reportes' && <ReportesPage />}
       </main>
 

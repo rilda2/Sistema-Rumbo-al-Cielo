@@ -68,9 +68,7 @@ export class CrearReservaUseCase {
         // 4. Combo y precio
         const combo = armarCombo(menu.platos, idPlatoPrincipal);
         const tarifas = await this.reservaRepository.getTarifas();
-        const esPension = idFamiliar
-            ? false
-            : await this.reservaRepository.tienePensionActiva(idUsuario, fechaLimpia);
+        const esPension = await this.reservaRepository.tienePensionActiva(idUsuario, fechaLimpia, idFamiliar);
         const costoAplicado = esPension ? tarifas.precioPension : tarifas.precioEsporadico;
 
         return await this.reservaRepository.crearReserva({

@@ -1,22 +1,22 @@
 import React, { useState, useMemo, useRef } from 'react';
 import Modal from '../../../../components/Modal';
-import { 
-  createPlatoUseCase, 
-  updatePlatoUseCase, 
-  deletePlatoUseCase 
+import {
+  createPlatoUseCase,
+  updatePlatoUseCase,
+  deletePlatoUseCase
 } from '../../di';
-import { 
-  compressImage, 
-  revokePreview, 
-  IMAGE_CONSTRAINTS 
+import {
+  compressImage,
+  revokePreview,
+  IMAGE_CONSTRAINTS
 } from '../../../../controllers/imageCompressor';
-import { 
-  ChefHat, 
-  Plus, 
-  Search, 
-  Edit3, 
-  Trash2, 
-  UtensilsCrossed, 
+import {
+  ChefHat,
+  Plus,
+  Search,
+  Edit3,
+  Trash2,
+  UtensilsCrossed,
   AlertCircle,
   UploadCloud,
   RefreshCw,
@@ -520,8 +520,8 @@ export default function PlatosCatalogo({
                 {submitting
                   ? 'Guardando...'
                   : editingPlato
-                  ? 'Actualizar Plato'
-                  : 'Guardar Plato'}
+                    ? 'Actualizar Plato'
+                    : 'Guardar Plato'}
               </span>
             </button>
           </div>

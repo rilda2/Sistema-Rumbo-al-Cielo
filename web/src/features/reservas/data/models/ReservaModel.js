@@ -23,6 +23,7 @@ export class ReservaModel {
             estado: String(row.estado || 'confirmada').toLowerCase(),
             tipo: String(row.tipo || 'diaria').toLowerCase(),
             esPension: row.es_pension === true,
+            esObligatoria: row.es_obligatoria === true,
             costoAplicado: Number(row.costo_aplicado ?? 0),
             recogido: row.recogido === true,
             notas: row.notas ?? null,

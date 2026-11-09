@@ -6,7 +6,7 @@ import { GetReservasPorFechaUseCase } from './domain/usecases/GetReservasPorFech
 import { CrearReservaUseCase } from './domain/usecases/CrearReservaUseCase';
 import { CancelarReservaUseCase } from './domain/usecases/CancelarReservaUseCase';
 import { MarcarEntregaUseCase } from './domain/usecases/MarcarEntregaUseCase';
-
+import { AsignarPlatosReservasPensionUseCase } from './domain/usecases/AsignarPlatosReservasPensionUseCase';
 // Los feriados los aporta el módulo Calendario (tabla excepcion_calendario)
 import { getExcepcionesUseCase } from '../calendario/di';
 
@@ -18,6 +18,7 @@ const reservaRepository = new SupabaseReservaRepository();
 // Horarios por defecto: reservar y cancelar hasta las 09:00, entregar de 12:00 a 14:00.
 // Para probar entregas fuera de horario, usa temporalmente:
 // new ReservaPolicy({ inicioEntrega: '00:00', finEntrega: '23:59' })
+export const asignarPlatosReservasPensionUseCase = new AsignarPlatosReservasPensionUseCase({ reservaRepository });
 export const reservaPolicy = new ReservaPolicy();
 
 export const obtenerFeriados = async () => await getExcepcionesUseCase.execute();

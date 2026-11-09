@@ -1,26 +1,28 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Modal from '../Modal';
+import { asignarPlatosReservasPensionUseCase } from '../../features/reservas';
 import { menuDiaService } from '../../lib/menu';
-import { 
-  CalendarDays, 
-  Calendar, 
-  Check, 
-  AlertCircle, 
-  Search, 
-  Trash2, 
-  RotateCcw, 
-  Save, 
-  Clock, 
+import {
+  CalendarDays,
+  Calendar,
+  Check,
+  AlertCircle,
+  Search,
+  Trash2,
+  RotateCcw,
+  Save,
+  Clock,
   ChefHat,
   Sparkles
 } from 'lucide-react';
 
-import { 
-  getMondayOfWeek, 
-  generateWeekDays, 
-  formatLocalDate, 
-  parseLocalDate 
+import {
+  getMondayOfWeek,
+  generateWeekDays,
+  formatLocalDate,
+  parseLocalDate
 } from '../../lib/dateUtils';
+
 
 const DRAFT_STORAGE_KEY = 'restaurante_menu_semanal_draft';
 
@@ -36,9 +38,10 @@ export default function MenuSemanalModal({
 }) {
   // Fecha base para la semana (Lunes)
   const [startMonday, setStartMonday] = useState(() => initialMonday || getMondayOfWeek());
-  
+
   // Días de la semana calculados (Lunes a Viernes)
-  const weekDays = useMemo(() => generateWeekDays(startMonday), [startMonday]);
+  // const weekDays = useMemo(() => generateWeekDays(startMonday), [startMonday]);
+  const weekDays = useMemo(() => generateWeekDays(startMonday).slice(0, 4), [startMonday]);
 
   // Día activo seleccionado en el modal para asignar platos (0: Lunes, 1: Martes...)
   const [activeDayIndex, setActiveDayIndex] = useState(initialDayIndex || 0);
@@ -65,7 +68,8 @@ export default function MenuSemanalModal({
   // EXTRAER DATOS EXISTENTES DESDE SUPABASE (menus)
   // ========================================================
   const getExistingWeekData = useCallback((mondayStr) => {
-    const days = generateWeekDays(mondayStr);
+    // const days = generateWeekDays(mondayStr);
+    const days = generateWeekDays(mondayStr).slice(0, 4);
     const data = {};
     let anyPublished = false;
     let hasAnyMenu = false;
@@ -168,7 +172,7 @@ export default function MenuSemanalModal({
       try {
         localStorage.removeItem(`${DRAFT_STORAGE_KEY}_${startMonday}`);
         localStorage.removeItem(DRAFT_STORAGE_KEY);
-      } catch (err) {}
+      } catch (err) { }
       setDraftSavedAt(null);
       const existing = getExistingWeekData(startMonday);
       setOriginalWeekData(existing);
@@ -219,7 +223,7 @@ export default function MenuSemanalModal({
           loadedFromDraft = true;
         }
       }
-    } catch (err) {}
+    } catch (err) { }
 
     if (!loadedFromDraft) {
       setSelectedPlatosByDate(existing.platosByDate);
@@ -295,11 +299,23 @@ export default function MenuSemanalModal({
       setSubmitting(true);
       await menuDiaService.guardarMenuSemanal(diasPayload);
 
+      try {
+        await asignarPlatosReservasPensionUseCase.execute({
+          dias: diasPayload.map((d) => ({
+            fecha: d.fecha,
+            publicado: d.estado_publicacion,
+            platos: platos.filter((p) => d.platos_ids.includes(Number(p.id_plato))),
+          })),
+        });
+      } catch (err) {
+        console.warn('No se pudieron asignar platos a las reservas de pensión:', err);
+      }
+
       // Limpiar el borrador temporal guardado en localStorage
       try {
         localStorage.removeItem(`${DRAFT_STORAGE_KEY}_${startMonday}`);
         localStorage.removeItem(DRAFT_STORAGE_KEY);
-      } catch (err) {}
+      } catch (err) { }
       setDraftSavedAt(null);
 
       const nombresDias = diasModificados.map((d) => d.dayName).join(', ');
@@ -405,7 +421,8 @@ export default function MenuSemanalModal({
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
             Selecciona el día para ver y asignar sus platos:
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {/*<div className="grid grid-cols-2 sm:grid-cols-5 gap-2">*/}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {weekDays.map((d, idx) => {
               const count = (selectedPlatosByDate[d.dateStr] || []).length;
               const isActive = activeDayIndex === idx;
@@ -415,11 +432,10 @@ export default function MenuSemanalModal({
                   key={d.dateStr}
                   type="button"
                   onClick={() => setActiveDayIndex(idx)}
-                  className={`p-3 rounded-xl border text-left transition relative flex flex-col justify-between ${
-                    isActive
-                      ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-300'
-                      : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
-                  }`}
+                  className={`p-3 rounded-xl border text-left transition relative flex flex-col justify-between ${isActive
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-md ring-2 ring-blue-300'
+                    : 'bg-white hover:bg-slate-50 border-slate-200 text-slate-700'
+                    }`}
                 >
                   <div>
                     <span className={`text-[10px] uppercase font-bold block ${isActive ? 'text-blue-100' : 'text-slate-400'}`}>
@@ -429,15 +445,14 @@ export default function MenuSemanalModal({
                   </div>
                   <div className="mt-2 flex items-center justify-between">
                     <span
-                      className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${
-                        count > 0
-                          ? isActive
-                            ? 'bg-white/20 text-white'
-                            : 'bg-emerald-100 text-emerald-800'
-                          : isActive
+                      className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded-full ${count > 0
+                        ? isActive
+                          ? 'bg-white/20 text-white'
+                          : 'bg-emerald-100 text-emerald-800'
+                        : isActive
                           ? 'bg-white/10 text-blue-200'
                           : 'bg-slate-100 text-slate-400'
-                      }`}
+                        }`}
                     >
                       {count} {count === 1 ? 'plato' : 'platos'}
                     </span>
@@ -456,11 +471,10 @@ export default function MenuSemanalModal({
               <h4 className="text-sm font-bold text-slate-800">
                 Platos para el {activeDay.dayName} ({activeDay.displayDate})
               </h4>
-              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                activeDayPlatos.length > 0
-                  ? 'bg-blue-100 text-blue-800'
-                  : 'bg-slate-200 text-slate-600'
-              }`}>
+              <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${activeDayPlatos.length > 0
+                ? 'bg-blue-100 text-blue-800'
+                : 'bg-slate-200 text-slate-600'
+                }`}>
                 {activeDayPlatos.length} seleccionados
               </span>
             </div>
@@ -492,16 +506,15 @@ export default function MenuSemanalModal({
                   <div
                     key={plato.id_plato}
                     onClick={() => togglePlatoForActiveDay(plato.id_plato)}
-                    className={`p-3 rounded-xl border cursor-pointer transition select-none flex items-start space-x-2.5 ${
-                      isSelected
-                        ? 'bg-blue-50/90 border-blue-400 text-blue-950 shadow-2xs ring-1 ring-blue-300'
-                        : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
-                    }`}
+                    className={`p-3 rounded-xl border cursor-pointer transition select-none flex items-start space-x-2.5 ${isSelected
+                      ? 'bg-blue-50/90 border-blue-400 text-blue-950 shadow-2xs ring-1 ring-blue-300'
+                      : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-700'
+                      }`}
                   >
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       className="mt-0.5 rounded text-blue-600 focus:ring-blue-500 pointer-events-none"
                     />
                     <div className="flex-1 min-w-0">

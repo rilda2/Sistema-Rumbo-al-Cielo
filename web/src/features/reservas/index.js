@@ -22,5 +22,6 @@ export {
     crearReservaUseCase,
     cancelarReservaUseCase,
     marcarEntregaUseCase,
+    asignarPlatosReservasPensionUseCase,
     obtenerFamiliares,
 } from './di';

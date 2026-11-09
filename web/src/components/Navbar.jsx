@@ -10,7 +10,8 @@ import {
   Sparkles,
   Layers,
   Calendar,
-  ClipboardList
+  ClipboardList,
+  Wallet
 } from 'lucide-react';
 
 export default function Navbar({ activeTab, setActiveTab }) {
@@ -36,6 +37,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
       { id: 'cuenta', label: 'Mi Cuenta', icon: UserCheck },
       { id: 'menu', label: 'Crear Menú', icon: UtensilsCrossed },
       { id: 'reservas-dia', label: 'Reservas', icon: ClipboardList },
+      { id: 'pensiones', label: 'Pensiones', icon: Wallet },
       { id: 'reportes', label: 'Reportes', icon: BarChart3 },
     ]
     : [
@@ -44,6 +46,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
       { id: 'cuenta', label: 'Mi Cuenta', icon: UserCheck },
       { id: 'menu', label: 'Ver Menú', icon: UtensilsCrossed },
       { id: 'mis-reservas', label: 'Mis Reservas', icon: ClipboardList },
+      { id: 'pension', label: 'Mi Pensión', icon: Wallet }
     ];
 
   const firstName = profile?.nombre || profile?.nombres;

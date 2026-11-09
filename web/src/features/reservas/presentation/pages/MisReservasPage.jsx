@@ -78,7 +78,11 @@ export default function MisReservasPage() {
     const lista = tab === 'proximas' ? proximas : historial;
 
     const renderReserva = (r) => {
-        const chequeo = tab === 'proximas' ? evaluarCancelacion(r.fecha) : null;
+        const chequeo = tab === 'proximas'
+            ? (r.esObligatoria
+                ? { permitido: false, mensaje: 'Almuerzo obligatorio de tu pensión: no se puede cancelar.' }
+                : evaluarCancelacion(r.fecha))
+            : null;
 
         return (
             <div key={r.id} className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -88,6 +92,9 @@ export default function MisReservasPage() {
                         <EstadoBadge reserva={r} />
                         {r.esPension && (
                             <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">Pensión</span>
+                        )}
+                        {r.esObligatoria && (
+                            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">Obligatorio</span>
                         )}
                     </div>
                     <p className="text-sm text-slate-700 flex items-start gap-1.5">
@@ -177,8 +184,8 @@ export default function MisReservasPage() {
             {mensaje && (
                 <div
                     className={`p-3 rounded-xl text-xs font-semibold flex items-start space-x-2 border ${mensaje.tipo === 'ok'
-                            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                            : 'bg-rose-50 border-rose-200 text-rose-800'
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                        : 'bg-rose-50 border-rose-200 text-rose-800'
                         }`}
                 >
                     {mensaje.tipo === 'ok' ? (
